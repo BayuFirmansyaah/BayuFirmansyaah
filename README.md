@@ -35,7 +35,7 @@ Anda dapat mengunjungi proyek-proyek ini untuk melihat lebih lanjut tentang apa 
 
 Saya senang berinteraksi dengan rekan pengembang dan orang-orang yang tertarik dengan pekerjaan saya. Jika Anda ingin berbicara atau memiliki pertanyaan, jangan ragu untuk menghubungi saya melalui:
 
-- Email: [bayufirmansyah.me@gmail.com]
+- Email: bayufirmansyah.me@gmail.com
 - LinkedIn: [Bayu Firmansyah](https://www.linkedin.com/in/bayufirmansyah/)
 
 Terima kasih telah mengunjungi profil GitHub saya! Saya berharap Anda menemukan proyek dan repositori yang menarik di sini.
