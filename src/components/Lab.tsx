@@ -31,7 +31,7 @@ function supportsWebGL() {
     return false;
   }
 }
-export default function Lab() {
+export default function Lab({ calm }: { calm: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const [entered, setEntered] = useState(false);
   const [active, setActive] = useState(false);
@@ -39,7 +39,11 @@ export default function Lab() {
   const [variant, setVariant] = useState(0);
   const [reset, setReset] = useState(0);
   const [rotation, setRotation] = useState(0);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotion() || calm;
+  const [shape, setShape] = useState(0);
+  const [energy, setEnergy] = useState(0.2);
+  const [wireframe, setWireframe] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const variants = [
     { name: "Racing lime", color: "#d7ff35" },
     { name: "Liquid silver", color: "#c5d3db" },
@@ -58,7 +62,7 @@ export default function Lab() {
   }, []);
   const fallback = (
     <div
-      className="core-fallback"
+      className={`core-fallback shape-${shape} ${wireframe ? "wireframe-fallback" : ""} ${expanded ? "expanded-fallback" : ""}`}
       style={{
         color: variants[variant].color,
         transform: `rotate(${rotation * 30}deg)`,
@@ -82,8 +86,8 @@ export default function Lab() {
           <span className="text-lime">LAYER.</span>
         </h2>
         <p>
-          Arsitektur yang kuat dimulai dari detail. Eksperimen visual tentang
-          struktur, interaksi, dan performa.
+          Satu struktur. Banyak kemungkinan. Putar bentuknya, bongkar
+          lapisannya, lalu naikkan energinya. Ini ruang untuk bereksperimen.
         </p>
         <span className="lab-caption">
           <MoveUpRight size={14} />
@@ -99,7 +103,7 @@ export default function Lab() {
         <div
           className="scene"
           role="img"
-          aria-label={`Sculpture abstrak ${variants[variant].name}. Putar dengan drag atau tombol reset.`}
+          aria-label={`Sculpture ${["knot", "orb", "torus"][shape]} berwarna ${variants[variant].name}. Putar dengan drag atau tombol arah.`}
         >
           {entered && webgl ? (
             <SceneBoundary fallback={fallback}>
@@ -110,12 +114,59 @@ export default function Lab() {
                   reduced={reduced}
                   active={active}
                   rotation={rotation}
+                  shape={shape}
+                  energy={energy}
+                  wireframe={wireframe}
+                  expanded={expanded}
                 />
               </Suspense>
             </SceneBoundary>
           ) : (
             fallback
           )}
+        </div>
+        <div className="lab-play-tools">
+          <div className="shape-options" aria-label="Pilih bentuk">
+            {["KNOT", "ORB", "TORUS"].map((name, i) => (
+              <button
+                type="button"
+                key={name}
+                aria-pressed={shape === i}
+                onClick={() => setShape(i)}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+          <div className="lab-mode-options">
+            <button
+              type="button"
+              aria-pressed={wireframe}
+              onClick={() => setWireframe((v) => !v)}
+            >
+              WIREFRAME
+            </button>
+            <button
+              type="button"
+              aria-pressed={expanded}
+              onClick={() => setExpanded((v) => !v)}
+            >
+              EXPAND ↗
+            </button>
+          </div>
+          <label className="energy-control">
+            ENERGY{" "}
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={Math.round(energy * 100)}
+              onChange={(e) => setEnergy(Number(e.target.value) / 100)}
+              disabled={reduced}
+              aria-label="Intensitas gerakan 3D"
+            />
+            <output>{Math.round(energy * 100)}%</output>
+          </label>
         </div>
         <div className="lab-controls">
           <div className="swatches" aria-label="Warna sculpture">
@@ -155,6 +206,10 @@ export default function Lab() {
             onClick={() => {
               setReset((v) => v + 1);
               setRotation(0);
+              setShape(0);
+              setEnergy(0.2);
+              setWireframe(false);
+              setExpanded(false);
             }}
             aria-label="Reset rotasi 3D"
           >

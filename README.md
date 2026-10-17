@@ -45,3 +45,17 @@ Three.js dimuat terpisah saat area lab mendekati viewport. Chunk 3D berukuran le
 ## Publikasi
 
 `.openai/hosting.json` mengonfigurasi build statis `dist/` pada Sites. Situs baru menggunakan akses privat. Source dapat dijalankan mandiri di hosting statis lain yang mendukung Vite.
+
+## Interactive chapters
+
+Mulai dari bagian About, pengalaman kini mencakup huruf yang bisa diacak/disusun kembali, respons huruf saat pointer lewat, kartu studi kasus bertumpuk di desktop, efek perspektif pointer, timeline yang digambar saat scroll, dan penutup dengan tipografi berlapis.
+
+Lab memiliki tiga bentuk (knot/orb/torus), wireframe, mode expand, dan slider energi. Playground “Make it connect” dapat diselesaikan dengan drag, sentuhan, atau keyboard: pilih modul lalu pilih slot yang cocok. Playground adalah ilustrasi alur full-stack, bukan simulasi produksi atau metrik proyek.
+
+Tombol mengambang **Motion: Calm** menonaktifkan animasi nonesensial. Preferensi reduced motion perangkat selalu dihormati. Animasi memakai GSAP context cleanup; 3D berhenti merender ketika tidak terlihat. Marquee tetap memiliki tombol jeda tersendiri.
+
+Uji interaksi (memakai Google Chrome lokal):
+
+```sh
+npm run test:e2e
+```

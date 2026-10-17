@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowDownRight,
@@ -15,10 +15,12 @@ import {
 } from "lucide-react";
 import { profile, projects, experience, skillGroups } from "./data/profile";
 import type { Project } from "./data/profile";
-import { useMotion } from "./hooks/useMotion";
+import { useMotion, useReducedMotion } from "./hooks/useMotion";
 import ProjectVisual from "./components/ProjectVisual";
 import Lab from "./components/Lab";
 import TechMarquee from "./components/TechMarquee";
+import KineticStatement from "./components/KineticStatement";
+import SystemPlayground from "./components/SystemPlayground";
 
 function Brand() {
   return (
@@ -128,7 +130,30 @@ function App() {
   const [project, setProject] = useState<Project | null>(null);
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scope = useMotion(ready);
+  const [motionEnabled, setMotionEnabled] = useState(true);
+  const systemReduced = useReducedMotion();
+  const calm = !motionEnabled || systemReduced;
+  const scope = useMotion(ready, motionEnabled);
+  const motionAnchor = useRef<{ node: Element; top: number } | null>(null);
+  const toggleMotion = () => {
+    const node = [...document.querySelectorAll("main > section")].find((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.top < innerHeight / 2 && rect.bottom > innerHeight / 2;
+    });
+    motionAnchor.current = node
+      ? { node, top: node.getBoundingClientRect().top }
+      : null;
+    setMotionEnabled((value) => !value);
+  };
+  useLayoutEffect(() => {
+    if (!motionAnchor.current) return;
+    const { node, top } = motionAnchor.current;
+    window.scrollTo({
+      top: scrollY + node.getBoundingClientRect().top - top,
+      behavior: "instant",
+    });
+    motionAnchor.current = null;
+  }, [motionEnabled]);
   useEffect(() => {
     let cancelled = false;
     let loaded = 0;
@@ -185,7 +210,7 @@ function App() {
     ["Perjalanan", "#journey"],
   ];
   return (
-    <div ref={scope}>
+    <div ref={scope} data-motion={calm ? "calm" : "full"}>
       {!ready && (
         <div
           className="preloader"
@@ -355,22 +380,28 @@ function App() {
         </section>
         <TechMarquee />
         <section id="about" className="about section-shell">
+          <svg
+            className="about-orbit"
+            viewBox="0 0 900 900"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle cx="450" cy="450" r="390" />
+            <ellipse
+              cx="450"
+              cy="450"
+              rx="250"
+              ry="410"
+              transform="rotate(35 450 450)"
+            />
+            <path d="M80 450H820M450 40V860" />
+          </svg>
           <div className="section-label">
             <span className="eyebrow">01 / THE PERSON BEHIND THE CODE</span>
             <span className="mono">[ A LITTLE ABOUT ME ]</span>
           </div>
           <div className="about-layout">
-            <h2 data-reveal>
-              COMPLEX
-              <br />
-              SYSTEMS.
-              <br />
-              <span>
-                CLEAR
-                <br />
-                SOLUTIONS.
-              </span>
-            </h2>
+            <KineticStatement calm={calm} />
             <div className="about-copy" data-reveal>
               <span className="about-symbol">↗</span>
               <h3>
@@ -454,19 +485,29 @@ function App() {
                 data-reveal
               >
                 <ProjectVisual id={p.id} />
-                <div className="project-meta">
-                  <span className="eyebrow">
-                    {p.number} / {p.type}
+                <div className="project-information">
+                  <div className="project-meta">
+                    <span className="eyebrow">
+                      {p.number} / {p.type}
+                    </span>
+                    <ArrowUpRight size={22} />
+                  </div>
+                  <h3>{p.name}</h3>
+                  <p>{p.description}</p>
+                  <div className="tags">
+                    {p.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
+                  </div>
+                  <span className="project-open">
+                    EXPLORE CASE STUDY <ArrowUpRight size={18} />
                   </span>
-                  <ArrowUpRight size={22} />
                 </div>
-                <h3>{p.name}</h3>
-                <p>{p.description}</p>
-                <div className="tags">
-                  {p.tags.map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
+                <span className="project-cursor" aria-hidden="true">
+                  VIEW
+                  <br />
+                  CASE ↗
+                </span>
               </button>
             ))}
           </div>
@@ -517,7 +558,7 @@ function App() {
             </div>
           </a>
         </section>
-        <Lab />
+        <Lab calm={calm} />
         <section id="stack" className="stack section-shell">
           <div className="section-label">
             <span className="eyebrow">04 / THE TOOLKIT</span>
@@ -565,6 +606,9 @@ function App() {
             </h2>
           </div>
           <div className="career-list">
+            <span className="career-progress" aria-hidden="true">
+              <i />
+            </span>
             {experience.map((e, i) => (
               <article className="career-row" key={e.company} data-reveal>
                 <span className="career-year">
@@ -601,7 +645,7 @@ function App() {
             </div>
           </div>
         </section>
-        <section className="domain section-shell">
+        <section id="domain" className="domain section-shell">
           <span className="eyebrow">06 / DOMAIN EXPERTISE</span>
           <div className="domain-heading">
             <h2>
@@ -617,6 +661,7 @@ function App() {
               sebagai satu ekosistem yang terhubung.
             </p>
           </div>
+          <SystemPlayground calm={calm} />
           <div className="domain-rows">
             {[
               [
@@ -650,6 +695,9 @@ function App() {
           </div>
         </section>
         <section id="contact" className="contact section-shell">
+          <div className="contact-orbit" aria-hidden="true">
+            <span>✳</span>
+          </div>
           <div className="section-label">
             <span className="eyebrow">07 / YOUR NEXT CHAPTER</span>
             <a href={profile.cv} download className="text-link">
@@ -662,9 +710,8 @@ function App() {
           </div>
           <a className="contact-title" href={`mailto:${profile.email}`}>
             <h2>
-              LET’S BUILD
-              <br />
-              <span>WHAT’S NEXT.</span>
+              <span className="contact-line">LET’S BUILD</span>
+              <span className="contact-line contact-accent">WHAT’S NEXT.</span>
             </h2>
             <ArrowUpRight />
           </a>
@@ -687,6 +734,9 @@ function App() {
         </section>
       </main>
       <footer className="footer section-shell">
+        <div className="footer-wordmark" aria-hidden="true">
+          KEEP BUILDING<span>↗</span>
+        </div>
         <div className="footer-top">
           <a href="#home" aria-label="Kembali ke awal">
             <Brand />
@@ -716,6 +766,23 @@ function App() {
           </span>
         </div>
       </footer>
+      <button
+        type="button"
+        className="motion-toggle"
+        onClick={toggleMotion}
+        disabled={systemReduced}
+        aria-pressed={calm}
+        aria-label={
+          systemReduced
+            ? "Animasi dikurangi sesuai pengaturan perangkat"
+            : calm
+              ? "Aktifkan animasi penuh"
+              : "Aktifkan mode tenang"
+        }
+      >
+        <span className="motion-indicator" />
+        MOTION: {calm ? "CALM" : "FULL"}
+      </button>
       <ProjectDialog project={project} onClose={() => setProject(null)} />
     </div>
   );

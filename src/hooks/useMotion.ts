@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Lenis from "lenis";
+import { setupPlayfulMotion } from "./playfulMotion";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 gsap.ticker.lagSmoothing(0);
 export function useReducedMotion() {
@@ -17,12 +18,12 @@ export function useReducedMotion() {
   }, []);
   return reduced;
 }
-export function useMotion(ready: boolean) {
+export function useMotion(ready: boolean, enabled = true) {
   const scope = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   useGSAP(
     () => {
-      if (!ready || reduced) return;
+      if (!ready || reduced || !enabled) return;
       const lenis = new Lenis({
         duration: 1.05,
         smoothWheel: true,
@@ -48,15 +49,19 @@ export function useMotion(ready: boolean) {
           { y: 25, opacity: 0, duration: 0.85, stagger: 0.1 },
           0.45,
         );
-      gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
-        gsap.from(el, {
-          y: 45,
-          opacity: 0,
-          duration: 0.85,
-          ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 92%", once: true },
+      gsap.utils
+        .toArray<HTMLElement>(
+          "[data-reveal]:not(.about-copy):not(.project):not(.career-row):not(.stats)",
+        )
+        .forEach((el) => {
+          gsap.from(el, {
+            y: 45,
+            opacity: 0,
+            duration: 0.85,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+          });
         });
-      });
       const mm = gsap.matchMedia();
       mm.add("(min-width: 761px)", () => {
         const journey = gsap.timeline({
@@ -204,14 +209,18 @@ export function useMotion(ready: boolean) {
           cta?.removeEventListener("pointerleave", reset);
         };
       });
+      const cleanupPlayful = scope.current
+        ? setupPlayfulMotion(scope.current)
+        : undefined;
       ScrollTrigger.refresh();
       return () => {
+        cleanupPlayful?.();
         mm.revert();
         gsap.ticker.remove(tick);
         lenis.destroy();
       };
     },
-    { scope, dependencies: [ready, reduced], revertOnUpdate: true },
+    { scope, dependencies: [ready, reduced, enabled], revertOnUpdate: true },
   );
   return scope;
 }
