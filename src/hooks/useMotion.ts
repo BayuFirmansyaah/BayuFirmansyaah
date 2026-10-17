@@ -213,7 +213,24 @@ export function useMotion(ready: boolean, enabled = true) {
         ? setupPlayfulMotion(scope.current)
         : undefined;
       ScrollTrigger.refresh();
+      // Experiments and details can change page height without a window resize.
+      let previousHeight = scope.current?.querySelector("main")?.offsetHeight;
+      let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+      const resizeObserver = new ResizeObserver(([entry]) => {
+        const height = (entry.target as HTMLElement).offsetHeight;
+        if (height === previousHeight) return;
+        previousHeight = height;
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(() => {
+          lenis.resize();
+          ScrollTrigger.refresh();
+        }, 120);
+      });
+      const main = scope.current?.querySelector("main");
+      if (main) resizeObserver.observe(main);
       return () => {
+        resizeObserver.disconnect();
+        clearTimeout(refreshTimer);
         cleanupPlayful?.();
         mm.revert();
         gsap.ticker.remove(tick);

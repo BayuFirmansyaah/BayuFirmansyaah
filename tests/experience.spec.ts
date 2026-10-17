@@ -139,11 +139,15 @@ test("3D controls change the experiment and calm mode keeps the reader in place"
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("slider", { name: "Intensitas gerakan 3D" }).focus();
   await page.keyboard.press("End");
-  await expect(page.getByRole("slider")).toHaveValue("100");
+  await expect(
+    page.getByRole("slider", { name: "Intensitas gerakan 3D" }),
+  ).toHaveValue("100");
   await page
     .getByRole("button", { name: "Reset rotasi 3D", exact: true })
     .click();
-  await expect(page.getByRole("slider")).toHaveValue("20");
+  await expect(
+    page.getByRole("slider", { name: "Intensitas gerakan 3D" }),
+  ).toHaveValue("20");
   await page.locator(".system-playground").scrollIntoViewIfNeeded();
   const before = await page
     .locator(".system-playground")
@@ -155,7 +159,9 @@ test("3D controls change the experiment and calm mode keeps the reader in place"
     .locator(".system-playground")
     .evaluate((el) => el.getBoundingClientRect().top);
   expect(Math.abs(after - before)).toBeLessThan(5);
-  await expect(page.getByRole("slider")).toBeDisabled();
+  await expect(
+    page.getByRole("slider", { name: "Intensitas gerakan 3D" }),
+  ).toBeDisabled();
   expect(errors).toEqual([]);
 });
 

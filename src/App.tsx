@@ -21,6 +21,9 @@ import Lab from "./components/Lab";
 import TechMarquee from "./components/TechMarquee";
 import KineticStatement from "./components/KineticStatement";
 import SystemPlayground from "./components/SystemPlayground";
+import EngineeringArcade from "./components/EngineeringArcade";
+import GravitySkills from "./components/GravitySkills";
+import SecretTerminal from "./components/SecretTerminal";
 
 function Brand() {
   return (
@@ -207,6 +210,7 @@ function App() {
   const nav = [
     ["Tentang", "#about"],
     ["Karya", "#work"],
+    ["Play", "#arcade"],
     ["Perjalanan", "#journey"],
   ];
   return (
@@ -559,6 +563,7 @@ function App() {
           </a>
         </section>
         <Lab calm={calm} />
+        <EngineeringArcade calm={calm} />
         <section id="stack" className="stack section-shell">
           <div className="section-label">
             <span className="eyebrow">04 / THE TOOLKIT</span>
@@ -592,6 +597,12 @@ function App() {
               ))}
             </div>
           </div>
+        </section>
+        <section
+          className="gravity-section section-shell"
+          aria-label="Gravity skills"
+        >
+          <GravitySkills calm={calm} />
         </section>
         <section id="journey" className="journey section-shell">
           <div className="section-label">
@@ -784,6 +795,7 @@ function App() {
         MOTION: {calm ? "CALM" : "FULL"}
       </button>
       <ProjectDialog project={project} onClose={() => setProject(null)} />
+      <SecretTerminal />
     </div>
   );
 }

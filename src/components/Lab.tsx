@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Component, lazy, Suspense, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import {
   ChevronLeft,
@@ -7,6 +7,8 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useReducedMotion } from "../hooks/useMotion";
+import { useVisibleActivity } from "../hooks/useVisibleActivity";
+import Overdrive from "./Overdrive";
 const CoreScene = lazy(() => import("./CoreScene"));
 class SceneBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
@@ -32,9 +34,9 @@ function supportsWebGL() {
   }
 }
 export default function Lab({ calm }: { calm: boolean }) {
-  const ref = useRef<HTMLElement>(null);
+  const { ref, active } = useVisibleActivity<HTMLElement>();
   const [entered, setEntered] = useState(false);
-  const [active, setActive] = useState(false);
+  const [boost, setBoost] = useState(false);
   const [webgl] = useState(supportsWebGL);
   const [variant, setVariant] = useState(0);
   const [reset, setReset] = useState(0);
@@ -52,7 +54,6 @@ export default function Lab({ calm }: { calm: boolean }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setActive(entry.isIntersecting);
         if (entry.isIntersecting) setEntered(true);
       },
       { rootMargin: "120px" },
@@ -96,7 +97,14 @@ export default function Lab({ calm }: { calm: boolean }) {
             : "Mode visual 2D · WebGL tidak tersedia"}
         </span>
       </div>
-      <div className="lab-stage">
+      <div
+        className={`lab-stage ${boost && !reduced && active ? "lab-overdrive" : ""}`}
+      >
+        <div className="overdrive-rays" aria-hidden="true">
+          {Array.from({ length: 12 }, (_, i) => (
+            <i key={i} style={{ transform: `rotate(${i * 30}deg)` }} />
+          ))}
+        </div>
         <div className="lab-cross top-left">+</div>
         <div className="lab-cross top-right">+</div>
         <div className="lab-coordinate">BF—CORE / EXPERIMENT 001</div>
@@ -115,9 +123,9 @@ export default function Lab({ calm }: { calm: boolean }) {
                   active={active}
                   rotation={rotation}
                   shape={shape}
-                  energy={energy}
+                  energy={boost && !reduced && active ? 1.6 : energy}
                   wireframe={wireframe}
-                  expanded={expanded}
+                  expanded={expanded || (boost && !reduced && active)}
                 />
               </Suspense>
             </SceneBoundary>
@@ -168,6 +176,7 @@ export default function Lab({ calm }: { calm: boolean }) {
             <output>{Math.round(energy * 100)}%</output>
           </label>
         </div>
+        <Overdrive disabled={reduced || !active} onChange={setBoost} />
         <div className="lab-controls">
           <div className="swatches" aria-label="Warna sculpture">
             {variants.map((v, i) => (
