@@ -18,6 +18,7 @@ import type { Project } from "./data/profile";
 import { useMotion } from "./hooks/useMotion";
 import ProjectVisual from "./components/ProjectVisual";
 import Lab from "./components/Lab";
+import TechMarquee from "./components/TechMarquee";
 
 function Brand() {
   return (
@@ -352,21 +353,7 @@ function App() {
             </a>
           </div>
         </section>
-        <div className="skills-strip" aria-label="Teknologi utama">
-          <span>LARAVEL</span>
-          <i>✳</i>
-          <span>REACT</span>
-          <i>✳</i>
-          <span>TYPESCRIPT</span>
-          <i>✳</i>
-          <span>POSTGRESQL</span>
-          <i>✳</i>
-          <span>NODE.JS</span>
-          <i>✳</i>
-          <span>DOCKER</span>
-          <i>✳</i>
-          <span>REDIS</span>
-        </div>
+        <TechMarquee />
         <section id="about" className="about section-shell">
           <div className="section-label">
             <span className="eyebrow">01 / THE PERSON BEHIND THE CODE</span>
