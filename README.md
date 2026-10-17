@@ -59,3 +59,19 @@ Uji interaksi (memakai Google Chrome lokal):
 ```sh
 npm run test:e2e
 ```
+
+## Engineering arcade
+
+Menu **Play** membuka tiga eksperimen dengan progress misi selama sesi halaman:
+
+- **KRS War Room**: naikkan beban request, aktifkan Redis cache/database index, amati antrean, lalu jeda atau reset simulasi. Kapasitas dan beban adalah angka model edukatif, bukan benchmark produksi.
+- **Debug Challenge**: tiga kasus batas SKS, isolasi cache mahasiswa, dan race condition kursi kelas. Setiap jawaban benar menjelaskan alasan perbaikannya. Kode berupa ilustrasi; tidak dieksekusi.
+- **Build Your Campus**: hubungkan KRS, LMS, payments, dan PDDIKTI pada visual kampus konseptual.
+
+**Gravity Skills** dapat ditarik/dilempar atau dilontarkan dengan Enter. Build architecture menyusun skill menurut lapisannya. Mode Calm menyajikan susunan statis, sedangkan tombol jeda membekukan simulasi fisika.
+
+Di lab, tahan **Overdrive** dengan pointer, Space, atau Enter untuk meningkatkan energi dan membuka satelit. Efek berhenti saat dilepas, pointer dibatalkan, fokus berpindah, layar ditinggalkan, atau setelah tiga detik. Reduced motion menonaktifkan boost.
+
+Tombol **Terminal** atau shortcut `~` membuka dialog lokal dengan `help`, `whoami`, `projects`, `play`, `stack`, `contact`, `sudo hire bayu`, `clear`, dan `exit`. Shortcut diabaikan saat mengetik. Riwayat menggunakan ↑/↓; Escape menutup dan mengembalikan fokus. Terminal tidak menjalankan shell, mengirim email otomatis, atau terhubung ke backend.
+
+Loop eksperimen berhenti saat area tidak terlihat atau tab browser tidak aktif. Perubahan tinggi konten memperbarui ScrollTrigger dan Lenis. Tes browser mencakup misi, drag, batas fisika, timer/pause, terminal, keyboard, mode Calm, serta overflow pada viewport kecil.

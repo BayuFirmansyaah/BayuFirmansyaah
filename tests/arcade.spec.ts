@@ -217,3 +217,70 @@ test("every arcade panel fits small screens and calm remains functional", async 
     await page.keyboard.press("Escape");
   }
 });
+
+test("gravity drag follows the pointer and keeps every skill inside its stage", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator(".preloader")).toHaveCount(0);
+  await page.locator(".gravity-stage").scrollIntoViewIfNeeded();
+  const chip = page.getByRole("button", {
+    name: "REACT: lontarkan skill",
+    exact: true,
+  });
+  await chip.focus();
+  await page.keyboard.press("Enter");
+  const box = await chip.boundingBox();
+  const stage = await page.locator(".gravity-stage").boundingBox();
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(stage!.x + stage!.width / 2, stage!.y + 70, {
+    steps: 8,
+  });
+  const held = await chip.boundingBox();
+  expect(
+    Math.abs(held!.x + held!.width / 2 - (stage!.x + stage!.width / 2)),
+  ).toBeLessThan(25);
+  await page.mouse.up();
+  await page.waitForTimeout(500);
+  await page
+    .getByRole("button", { name: "Jeda gravitasi", exact: true })
+    .click();
+  const inBounds = await page.locator(".gravity-stage").evaluate((el) => {
+    const bounds = el.getBoundingClientRect();
+    return Array.from(el.querySelectorAll(".gravity-chip")).every((chip) => {
+      const b = chip.getBoundingClientRect();
+      return (
+        b.left >= bounds.left - 1 &&
+        b.right <= bounds.right + 1 &&
+        b.top >= bounds.top - 1 &&
+        b.bottom <= bounds.bottom + 1
+      );
+    });
+  });
+  expect(inBounds).toBe(true);
+});
+
+test("hidden simulator stops processing while another experiment is open", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator(".preloader")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Traffic spike", exact: true })
+    .click();
+  await page.getByRole("tab").nth(1).click();
+  await expect
+    .poll(() => page.locator(".krs-simulator").getAttribute("class"))
+    .toContain("experiment-paused");
+  await page.waitForTimeout(100);
+  const queue = await page
+    .locator(".sim-dashboard strong")
+    .nth(2)
+    .textContent();
+  await page.waitForTimeout(700);
+  expect(await page.locator(".sim-dashboard strong").nth(2).textContent()).toBe(
+    queue,
+  );
+});
