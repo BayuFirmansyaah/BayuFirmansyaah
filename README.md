@@ -1,0 +1,47 @@
+# Bayu Firmansyah — Portfolio
+
+Portofolio React berbahasa Indonesia untuk Senior Full Stack Developer & Edutech Solution Architect. Desain editorial hitam–lime mengadaptasi arahan `../task.md`; seluruh pengalaman, pendidikan, kontak, dan capaian bersumber dari CV Februari 2026.
+
+## Jalankan
+
+Node.js 22+ dan npm diperlukan.
+
+```sh
+npm ci
+npm run dev
+```
+
+```sh
+npm run typecheck
+npm run build
+npm run preview
+```
+
+## Konten dan struktur
+
+- `src/data/profile.ts`: profil, kontak, studi kasus, pengalaman, dan keahlian.
+- `src/App.tsx`: struktur halaman, navigasi, hero, dialog studi kasus, unduhan dan kontak.
+- `src/hooks/useMotion.ts`: GSAP/ScrollTrigger, Lenis, reveal, pointer parallax, magnetic CTA, serta cleanup.
+- `src/components/ProjectVisual.tsx`: ilustrasi studi kasus. Visual bukan screenshot produk asli.
+- `src/components/Lab.tsx` dan `CoreScene.tsx`: eksperimen 3D procedural, pemilihan warna, kontrol keyboard, reset, lazy loading, pause offscreen, dan fallback 2D.
+- `src/styles/index.css`: tema, layout, dan breakpoint responsif.
+- `public/bayu-firmansyah-cv.pdf`: CV sumber yang dapat diunduh.
+- `ASSETS.md`: asal visual, prompt generasi, dan referensi desain.
+
+## Hero dan gerakan
+
+Hero menggunakan visual workspace developer orisinal. Di desktop, pointer menggeser dan memiringkan lapisan visual dengan easing. Scroll sepanjang kurang dari satu viewport menahan hero sebentar, mengurangi ukuran visual menjadi panel tengah, menggeser nama keluar, lalu mengungkap dua baris tipografi bergerak serta simbol kode yang digambar progresif. Pola ini terinspirasi pengalaman pada landonorris.com, bukan reproduksi source code atau asetnya. Tidak mengklaim foto workspace sebagai ruang kerja Bayu yang sebenarnya.
+
+Mobile memakai parallax sederhana tanpa pin agar navigasi sentuh tetap nyaman. `prefers-reduced-motion` mematikan intro, smooth scrolling, pin, dan parallax; konten tetap terbaca. Kontrol warna dan rotasi 3D tetap dapat dioperasikan dengan keyboard.
+
+## Data dan batasan
+
+Angka 1.200+ menunjukkan jangkauan ekosistem SiakadCloud/EdLink, bukan jumlah klien pribadi. Peningkatan response time 40% dan pengalaman 5 tahun mengikuti isi CV. Status pekerjaan/pendidikan “sekarang” adalah snapshot Februari 2026 dan perlu diperbarui ketika CV berubah.
+
+Tidak ada backend atau formulir kontak palsu: kontak membuka aplikasi email, LinkedIn membuka profil sumber, dan CV mengunduh PDF yang disediakan. Tidak ditambahkan testimoni, sponsor, data balapan, metrik live, atau proyek fiktif. Bagian racing pada brief diadaptasi menjadi engineering, mentoring, domain pendidikan, dan perjalanan karier.
+
+Three.js dimuat terpisah saat area lab mendekati viewport. Chunk 3D berukuran lebih besar daripada bundle utama; browser tanpa WebGL mendapat visual CSS 2D. Gambar dan font disajikan lokal, tanpa ketergantungan runtime pada CDN gambar/font.
+
+## Publikasi
+
+`.openai/hosting.json` mengonfigurasi build statis `dist/` pada Sites. Situs baru menggunakan akses privat. Source dapat dijalankan mandiri di hosting statis lain yang mendukung Vite.
